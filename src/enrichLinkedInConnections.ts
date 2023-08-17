@@ -35,7 +35,7 @@ const enrichLinkedInConnections = async () => {
         if (n >= totalToEnrich) break
         if (!connection.linkedIn) {
             console.log(
-                `⚠️ (${startLineNumber + n})\tLine incorrectly formatted`
+                `⚠️ (${startLineNumber + n})\t\tLine incorrectly formatted`
             )
             continue
         }
@@ -43,7 +43,7 @@ const enrichLinkedInConnections = async () => {
             console.log(
                 `🟡 (${startLineNumber + n})\t${connection.firstName} ${
                     connection.lastName
-                }\tAlready have email`
+                }\t\tAlready have email`
             )
             continue
         }
@@ -57,13 +57,13 @@ const enrichLinkedInConnections = async () => {
                 console.log(
                     `✅ (${startLineNumber + n})\t${connection.firstName} ${
                         connection.lastName
-                    }\tFound email: ${connection.email}`
+                    }\t\tFound email: ${connection.email}`
                 )
             } else {
                 console.log(
                     `❌ (${startLineNumber + n})\t${connection.firstName} ${
                         connection.lastName
-                    }\tNo email found`
+                    }\t\tNo email found`
                 )
             }
             n++
