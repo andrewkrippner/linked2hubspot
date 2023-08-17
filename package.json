@@ -1,7 +1,8 @@
 {
     "author": "Andrew Krippner",
     "dependencies": {
-        "@hubspot/api-client": "^9.1.1"
+        "@hubspot/api-client": "^9.1.1",
+        "axios": "^1.4.0"
     },
     "description": "linked2hubspot is a Node CLI tool that processes LinkedIn connection data, uploads it to HubSpot Contacts, and optionally creates HubSpot Deals",
     "devDependencies": {
@@ -22,7 +23,8 @@
     "private": false,
     "repository": "https://www.github.com/andrewkrippner/linkedin2hubspot",
     "scripts": {
-        "start": "ts-node src/index.ts"
+        "start": "ts-node src/index.ts",
+        "enrich": "ts-node src/enrichLinkedInConnections.ts"
     },
     "version": "1.0.0"
 }

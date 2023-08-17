@@ -23,6 +23,12 @@ linked2hubspot is a Node CLI tool that processes LinkedIn connection data, uploa
 
 -   Run `yarn`
 
+### Configure
+
+-   Set HUBSPOT_ACCESS_TOKEN env variable
+-   Optional: Set HUBSPOT_DEAL_STAGE_ID env variable
+-   Optional: Set APOLLO_API_KEY env variable
+
 ### Run
 
 -   Run `yarn start`

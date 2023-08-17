@@ -1,4 +1,4 @@
-export const transformDate = (dateString: string): string => {
+export const linkedInDate2HubSpotDate = (dateString: string): string => {
     const months: { [key: string]: string } = {
         Jan: '01',
         Feb: '02',
@@ -19,4 +19,25 @@ export const transformDate = (dateString: string): string => {
     const formattedMonth = months[month]
 
     return `${year}-${formattedMonth}-${formattedDay}`
+}
+
+export const hubSpotDate2LinkedInDate = (dateString: string): string => {
+    const months: string[] = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+    ]
+    const [year, month, day] = dateString.split('-')
+    const formattedMonth = months[parseInt(month, 10) - 1]
+    const formattedDay = day.startsWith('0') ? day.slice(1) : day
+    return `${formattedDay} ${formattedMonth} ${year}`
 }

@@ -1,12 +1,12 @@
 import { promptUser } from './promptUser'
 import { getHubspotClient, syncHubspotContact } from './hubspot'
-import { getLinkedInConnections } from './getLinkedInConnections'
+import { readLinkedInConnections } from './linkedInConnection'
 
 const linked2HubSpot = async () => {
-    const accessToken = await promptUser('Enter HubSpot Access Token: ')
-    const dealStage = await promptUser('Enter HubSpot Deal Stage: ')
+    const accessToken = process.env.HUBSPOT_ACCESS_TOKEN!
+    const dealStage = process.env.HUBSPOT_DEAL_STAGE_ID
     const hubspotClient = getHubspotClient(accessToken)
-    const connections = getLinkedInConnections()
+    const connections = readLinkedInConnections()
     for (const [i, connection] of connections.entries()) {
         const prompt = `(${i + 1}/${connections.length}) Sync ${
             connection.firstName
