@@ -1,76 +1,58 @@
-import axios from 'axios'
+import { enrichContact } from './enrichContact'
 import {
     LinkedInConnection,
     readLinkedInConnections,
     writeLinkedInConnections,
 } from './linkedInConnection'
 
-export const getEnrichedLinkedInConnection = async (
-    linkedInConnection: LinkedInConnection,
-    apiKey: string
-) => {
-    const url = 'https://api.apollo.io/v1/people/match'
-    const headers = {
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json',
-    }
-    const data = {
-        api_key: apiKey,
-        email: linkedInConnection.email,
-        first_name: linkedInConnection.firstName,
-        last_name: linkedInConnection.lastName,
-        organization_name: linkedInConnection.companyName,
-        reveal_personal_emails: true,
-    }
-    const res = await axios.post(url, data, { headers })
-    return res.data
-}
+export const enrichLinkedInConnection = async (
+    linkedInConnection: LinkedInConnection
+) => enrichContact(linkedInConnection)
 
 const enrichLinkedInConnections = async () => {
-    const totalToEnrich = 50
+    const maxApiCalls = 200
     const startLineNumber = parseInt(process.argv[2]) ?? 2
+    let lineNumber = startLineNumber
+    let numberApiCalls = 0
     const connections = readLinkedInConnections()
-    let n = 0
     for (const connection of connections.slice(startLineNumber - 2)) {
-        if (n >= totalToEnrich) break
+        if (numberApiCalls >= maxApiCalls) break
         if (!connection.linkedIn) {
             console.log(
-                `⚠️ (${startLineNumber + n})\t\tLine incorrectly formatted`
+                `⚠️ (${lineNumber})\t\t${Array(41).join(
+                    ' '
+                )}Line incorrectly formatted`
             )
             continue
         }
+        const name = `${connection.firstName} ${connection.lastName}`
+        const whiteSpace = Array(41 - name.length).join(' ')
         if (connection.email) {
             console.log(
-                `🟡 (${startLineNumber + n})\t${connection.firstName} ${
-                    connection.lastName
-                }\t\tAlready have email`
+                `🟡 (${lineNumber})\t${name + whiteSpace}Already have email`
             )
             continue
         }
         try {
-            const enriched = await getEnrichedLinkedInConnection(
-                connection,
-                process.env.APOLLO_API_KEY!
-            )
+            const enriched = await enrichLinkedInConnection(connection)
             if (enriched?.person?.contact?.email_status === 'verified') {
                 connection.email = enriched.person.contact.email
                 console.log(
-                    `✅ (${startLineNumber + n})\t${connection.firstName} ${
-                        connection.lastName
-                    }\t\tFound email: ${connection.email}`
+                    `✅ (${lineNumber})\t${name + whiteSpace}Found email: ${
+                        connection.email
+                    }`
                 )
             } else {
                 console.log(
-                    `❌ (${startLineNumber + n})\t${connection.firstName} ${
-                        connection.lastName
-                    }\t\tNo email found`
+                    `❌ (${lineNumber})\t${name + whiteSpace}No email found`
                 )
             }
-            n++
-        } catch (e) {
-            console.error(e)
+            numberApiCalls++
+        } catch (e: any) {
+            console.error(e.response.data)
             break
         }
+        lineNumber++
     }
     writeLinkedInConnections(connections)
 }
