@@ -27,23 +27,46 @@ export const getEnrichedLinkedInConnection = async (
 }
 
 const enrichLinkedInConnections = async () => {
+    const totalToEnrich = 50
+    const startLineNumber = parseInt(process.argv[2]) ?? 2
     const connections = readLinkedInConnections()
     let n = 0
-    for (const connection of connections) {
-        if (n >= 50) break
-        if (connection.email || !connection.linkedIn) continue
+    for (const connection of connections.slice(startLineNumber - 2)) {
+        if (n >= totalToEnrich) break
+        if (!connection.linkedIn) {
+            console.log(
+                `⚠️ (${startLineNumber + n})\tLine incorrectly formatted`
+            )
+            continue
+        }
+        if (connection.email) {
+            console.log(
+                `🟡 (${startLineNumber + n})\t${connection.firstName} ${
+                    connection.lastName
+                }\tAlready have email`
+            )
+            continue
+        }
         try {
             const enriched = await getEnrichedLinkedInConnection(
                 connection,
                 process.env.APOLLO_API_KEY!
             )
-            n++
             if (enriched?.person?.contact?.email_status === 'verified') {
                 connection.email = enriched.person.contact.email
                 console.log(
-                    `Found email for ${connection.firstName} ${connection.lastName}: ${connection.email}`
+                    `✅ (${startLineNumber + n})\t${connection.firstName} ${
+                        connection.lastName
+                    }\tFound email: ${connection.email}`
+                )
+            } else {
+                console.log(
+                    `❌ (${startLineNumber + n})\t${connection.firstName} ${
+                        connection.lastName
+                    }\tNo email found`
                 )
             }
+            n++
         } catch (e) {
             console.error(e)
             break
