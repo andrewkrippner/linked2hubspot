@@ -54,12 +54,9 @@ export const createHubspotDeal = (
 export const syncHubspotContact = async (
     hubspotClient: Client,
     linkedInConnection: LinkedInConnection,
-    dealStage?: string
+    dealStage?: string,
+    contactId?: string
 ) => {
-    const contactId = await getHubspotContactId(
-        hubspotClient,
-        linkedInConnection.email
-    )
     if (contactId) {
         await hubspotClient.crm.contacts.basicApi.update(contactId, {
             properties: {
